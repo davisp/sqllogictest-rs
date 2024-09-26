@@ -1137,7 +1137,7 @@ impl<D: AsyncDB, M: MakeConnection<Conn = D>> Runner<D, M> {
                     }
                 }
             }
-            _ => unreachable!(),
+            else => unreachable!("{:#?}", else),
         }
 
         Ok(result)
