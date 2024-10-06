@@ -199,6 +199,12 @@ impl<T: ColumnType> Record<T> {
 /// as Query and Statement.
 impl<T: ColumnType> std::fmt::Display for Record<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let fmt_params = sqlformat::QueryParams::None;
+        let fmt_opts = sqlformat::FormatOptions {
+            uppercase: Some(true),
+            lines_between_queries: 0,
+            ..Default::default()
+        };
         match self {
             Record::Include { loc: _, filename } => {
                 write!(f, "include {filename}")
@@ -218,7 +224,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                 }
                 writeln!(f)?;
                 // statement always end with a blank line
-                writeln!(f, "{sql}")?;
+                writeln!(f, "{}", sqlformat::format(sql, &fmt_params, &fmt_opts))?;
 
                 if let StatementExpect::Error(err) = expected {
                     err.fmt_multiline(f)?;
@@ -254,7 +260,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                     QueryExpect::Error(err) => err.fmt_inline(f)?,
                 }
                 writeln!(f)?;
-                writeln!(f, "{sql}")?;
+                writeln!(f, "{}", sqlformat::format(sql, &fmt_params, &fmt_opts))?;
 
                 match expected {
                     QueryExpect::Results { results, .. } => {
