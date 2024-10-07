@@ -233,7 +233,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                 }
                 writeln!(f)?;
                 // statement always end with a blank line
-                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts));
+                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts).trim())?;
 
                 if let StatementExpect::Error(err) = expected {
                     err.fmt_multiline(f)?;
@@ -269,7 +269,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                     QueryExpect::Error(err) => err.fmt_inline(f)?,
                 }
                 writeln!(f)?;
-                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts))?;
+                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts).trim())?;
 
                 match expected {
                     QueryExpect::Results { results, .. } => {
