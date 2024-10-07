@@ -200,19 +200,7 @@ impl<T: ColumnType> Record<T> {
 impl<T: ColumnType> std::fmt::Display for Record<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut formatter = sqlparse::Formatter::default();
-        let mut fmt_opts = sqlparse::FormatOption::default();
-        fmt_opts.keyword_case = "upper";
-        fmt_opts.identifier_case = "lower";
-        fmt_opts.strip_comments = false;
-        fmt_opts.use_space_around_operators = true;
-        fmt_opts.strip_whitespace = true;
-        fmt_opts.reindent = true;
-        fmt_opts.reindent_aligned = true;
-        fmt_opts.indent_tabs = false;
-        fmt_opts.indent_width = 2;
-        fmt_opts.indent_char = " ";
-        fmt_opts.wrap_after = 20;
-        fmt_opts.comma_first = false;
+        let mut fmt_opts = sqlparse::FormatOption::default_reindent_aligned();
 
         match self {
             Record::Include { loc: _, filename } => {
