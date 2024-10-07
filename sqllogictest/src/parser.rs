@@ -211,7 +211,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
         fmt_opts.indent_width = 2;
         fmt_opts.indent_char = " ";
         fmt_opts.wrap_after = 20;
-        fmt_opts.commas_first = false;
+        fmt_opts.comma_first = false;
 
         match self {
             Record::Include { loc: _, filename } => {
