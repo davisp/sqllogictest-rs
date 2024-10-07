@@ -199,12 +199,21 @@ impl<T: ColumnType> Record<T> {
 /// as Query and Statement.
 impl<T: ColumnType> std::fmt::Display for Record<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let fmt_params = sqlformat::QueryParams::None;
-        let fmt_opts = sqlformat::FormatOptions {
-            uppercase: Some(true),
-            lines_between_queries: 0,
-            ..Default::default()
-        };
+        let mut formatter = sqlparse::Formatter::default();
+        let mut fmt_opts = sqlparse::FormatOption::default();
+        fmt_opts.keyword_case = "upper";
+        fmt_opts.identifier_case = "lower";
+        fmt_opts.strip_comments = false;
+        fmt_opts.use_space_around_operators = true;
+        fmt_opts.strip_whitespace = true;
+        fmt_opts.reindent = true;
+        fmt_opts.reindent_aligned = true;
+        fmt_opts.indent_tabs = false;
+        fmt_opts.indent_width = 2;
+        fmt_opts.indent_char = " ";
+        fmt_opts.wrap_after = 20;
+        fmt_opts.comma_first = false;
+
         match self {
             Record::Include { loc: _, filename } => {
                 write!(f, "include {filename}")
@@ -224,7 +233,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                 }
                 writeln!(f)?;
                 // statement always end with a blank line
-                writeln!(f, "{}", sqlformat::format(sql, &fmt_params, &fmt_opts))?;
+                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts));
 
                 if let StatementExpect::Error(err) = expected {
                     err.fmt_multiline(f)?;
@@ -260,7 +269,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                     QueryExpect::Error(err) => err.fmt_inline(f)?,
                 }
                 writeln!(f)?;
-                writeln!(f, "{}", sqlformat::format(sql, &fmt_params, &fmt_opts))?;
+                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts))?;
 
                 match expected {
                     QueryExpect::Results { results, .. } => {

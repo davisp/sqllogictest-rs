@@ -21,7 +21,7 @@ md-5 = "0.10"
 owo-colors = "4"
 regex = "1"
 similar = "2.2.1"
-sqlformat = { git = "https://github.com/davisp/sqlformat-rs.git", branch = "main" }
+sqlparse = "0.3"
 subst = "0.3"
 tempfile = "3"
 thiserror = "1"
