@@ -200,7 +200,18 @@ impl<T: ColumnType> Record<T> {
 impl<T: ColumnType> std::fmt::Display for Record<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut formatter = sqlparse::Formatter::default();
-        let mut fmt_opts = sqlparse::FormatOption::default_reindent_aligned();
+        let mut fmt_opts = sqlparse::FormatOption::default();
+        fmt_opts.keyword_case = "upper";
+        fmt_opts.identifier_case = "lower";
+        fmt_opts.strip_comments = false;
+        fmt_opts.use_space_around_operators = true;
+        fmt_opts.strip_whitespace = true;
+        fmt_opts.reindent_aligned = true;
+        fmt_opts.indent_tabs = false;
+        fmt_opts.indent_width = 2;
+        fmt_opts.indent_char = " ";
+        fmt_opts.wrap_after = 20;
+        fmt_opts.commas_first = false;
 
         match self {
             Record::Include { loc: _, filename } => {
@@ -221,7 +232,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                 }
                 writeln!(f)?;
                 // statement always end with a blank line
-                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts).trim())?;
+                writeln!(f, "{}", formatter.format(sql, &mut fmt_opts).trim())?;
 
                 if let StatementExpect::Error(err) = expected {
                     err.fmt_multiline(f)?;
@@ -257,7 +268,7 @@ impl<T: ColumnType> std::fmt::Display for Record<T> {
                     QueryExpect::Error(err) => err.fmt_inline(f)?,
                 }
                 writeln!(f)?;
-                writeln!(f, "{}", formatter.format_sql(sql, &fmt_opts).trim())?;
+                writeln!(f, "{}", formatter.format(sql, &mut fmt_opts).trim())?;
 
                 match expected {
                     QueryExpect::Results { results, .. } => {
